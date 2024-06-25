@@ -1,0 +1,65 @@
+$timestamp_color: #b1b1b1;
+$blue: #3794ff;
+
+#root {
+  height: calc(100vh - 40px);
+}
+
+body {
+  background: #f5fbff;
+  font-family: Helvetica, sans-serif;
+  font-size: 16px;
+}
+
+.app-wrapper {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+}
+
+.content-wrapper {
+  height: 100%;
+  overflow: scroll;
+}
+
+.message-wrapper {
+  display: flex;
+
+  &.self {
+    justify-content: end;
+
+    .message {
+      background: orange;
+    }
+  }
+}
+
+.image-list-wrapper {
+  display: flex;
+  text-align: right;
+  justify-content: end;
+  column-gap: 20px;
+}
+
+.message {
+  display: flex;
+  flex-flow: column;
+  position: relative;
+  font-size: 14px;
+  padding: 12px 15px;
+  border-radius: 3px;
+  filter: drop-shadow(0 1px 2px rgba(36, 91, 140, 0.3));
+  line-height: 150%;
+  margin-bottom: 25px;
+  background-color: green;
+  color: white;
+
+  .name {
+    font-size: 10px;
+  }
+
+  .date {
+    font-size: 10px;
+    text-align: right;
+  }
+}

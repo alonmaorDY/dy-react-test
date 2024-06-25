@@ -1,0 +1,126 @@
+<head>
+  <!-- Test infrastructure - DO NOT EDIT -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+  <script>
+    (() => {
+      // Function to generate a unique identifier (UUID)
+      let generateUUID = () =>
+          '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
+            (
+              c ^
+              (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+            ).toString(16)
+          ),
+        // Placeholder functions for event handling
+        onMessageHandler = () => null,
+        onTypingHandler = () => null,
+        // Variable to keep track of the number of sent messages
+        messageCount = 0,
+        // Interval variable
+        messageInterval,
+        // Predefined list of fake user names
+        users = [
+          faker.name.firstName(),
+          faker.name.firstName(),
+          faker.name.firstName(),
+        ],
+        // Function to handle sending messages
+        sendMessage = (message) => onMessageHandler(message),
+        // Function to send a message
+        sendChatMessage = (content, user = 'Me', products) => {
+          sendMessage({
+            ...(!products && { content: content }),
+            ...(products && { products: products }),
+            user: user,
+            id: generateUUID(),
+            timestamp: Date.now(),
+          });
+        },
+        // Function to get a random user from the list
+        getRandomUser = () => users[Math.round(2 * Math.random())],
+        // Function to simulate sending hacker phrases at intervals
+        startMessageSimulation = () => {
+          messageCount = 0;
+          clearInterval(messageInterval);
+          messageInterval = setInterval(() => {
+            if (messageCount >= 3) {
+              clearInterval(messageInterval);
+              return;
+            }
+            sendChatMessage(faker.hacker.phrase(), getRandomUser());
+            messageCount++;
+          }, 5000);
+        },
+        // Function to simulate typing notifications at random intervals
+        simulateTyping = () => {
+          let user = getRandomUser();
+          onTypingHandler(user);
+          let interval = (Math.floor(10 * Math.random()) + 4) * 1000;
+          setTimeout(simulateTyping, interval);
+        };
+
+      // Start simulating typing notifications
+      simulateTyping();
+
+      // Add event listener to simulate the current user typing when a key is pressed
+      document.addEventListener('keydown', () => {
+        onTypingHandler('Me');
+      });
+
+      // Expose the Chat API to the window object
+      window.Chat = {
+        // Function to send a message, starts message simulation and returns a promise
+        sendMessage: (message) => {
+          console.log(message);
+          startMessageSimulation();
+          return new Promise((resolve, reject) => {
+            if (Math.floor(3 * Math.random()) < 2) {
+              setTimeout(() => {
+                const products = [
+                  {
+                    id: 1,
+                    name: 'Arak',
+                    src: 'https://www.paneco.co.il/media//cache/255x255/077fd1980b44449e6aab430673fbdfa09c3982ab1566e7931152c1417054276f/8b2dbd4b42c9514f65a12503e4d72b1081af7811845525eed514b2a9c045fbec.jpeg',
+                  },
+                  {
+                    id: 2,
+                    name: 'Rum',
+                    src: 'https://www.paneco.co.il/media//cache/255x255/077fd1980b44449e6aab430673fbdfa09c3982ab1566e7931152c1417054276f/6f7a87c918862dc523226a82dde0eb73560fc01ea94442fb40de81677fa0e22c.jpeg',
+                  },
+                  {
+                    id: 3,
+                    name: 'Stella',
+                    src: 'https://www.paneco.co.il/media//cache/255x255/077fd1980b44449e6aab430673fbdfa09c3982ab1566e7931152c1417054276f/859e4a684583458d860eb6b3922d23fab88d552c4d10ccedfe57d28cc7597e01.jpg',
+                  },
+                ];
+                if (!message.includes('product')) {
+                  sendChatMessage(message, 'Me');
+                } else {
+                  sendChatMessage(message, 'Me', products);
+                }
+
+                resolve();
+              }, 300);
+            } else {
+              reject(new Error('Failed to send message'));
+            }
+          });
+        },
+
+        // Function to set the onMessage event handler
+        onMessage(handler) {
+          startMessageSimulation();
+          onMessageHandler = handler;
+        },
+
+        // Function to set the onTyping event handler
+        onTyping(handler) {
+          onTypingHandler = handler;
+        },
+      };
+    })();
+  </script>
+  <!-- Test infrastructure - DO NOT EDIT -->
+</head>
+
+<div id="root"></div>
